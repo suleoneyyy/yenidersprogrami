@@ -1,0 +1,52 @@
+﻿@model List<YeniDersProgrami.ViewModels.DersTablosu>
+@{
+    ViewBag.Title = "Goster";
+}
+
+<h2>Ders Programı</h2>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <a href="@Url.Action("Add")" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i>Ders Ekle</a>
+}
+
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ders</th>
+            <th>Gün</th>
+            <th>Başlangıç Saati</th>
+            <th>Bitiş Saati</th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th></th>
+            }
+  
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ders in Model)
+        {
+            <tr>
+                <td>@ders.DersAdi</td>
+                <td>@ders.Gun</td>
+                <td>@ders.Baslangic</td>
+                <td>@ders.Bitis</td>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <td>
+                        <div class="btn-group">                           
+                            <a href="@Url.Action("Delete", new { ders.Id })" class="btn btn-xs btn-danger">
+                                <i class="glyphicon glyphicon-remove"></i>
+                                Delete
+                            </a>
+                        </div>
+                    </td>
+                }
+                
+            </tr>
+        }
+    </tbody>
+</table>
+

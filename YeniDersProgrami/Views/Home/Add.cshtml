@@ -1,0 +1,157 @@
+﻿@model YeniDersProgrami.ViewModels.DersEkle
+@{
+    ViewBag.Title = "Manage";
+}
+
+<h2>Ders Ekle</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary()
+
+    <div class="form-group">
+
+        @Html.LabelFor(x => x.Fakulteler, "Fakülte")
+        @Html.DropDownListFor(m => m.fakulte,
+      new SelectList(Model.Fakulteler, "Id", "Ad"), "--Seçin--", new { @class = "form-control", @id = "ddlFakulte" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Bolumler, "Bölüm")
+        @Html.DropDownListFor(m => m.bolum,
+  new List<SelectListItem>(), "--Seçin--", new { @class = "form-control", @id = "ddlBolum" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(x => x.Siniflar, "Sınıf")
+        @Html.DropDownListFor(m => m.sinif,
+     new SelectList(Model.Siniflar, "Id", "Ad"), "--Seçin--", new { @class = "form-control", @id = "ddlSinif" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Gunler, "Gün")
+        @Html.DropDownListFor(m => m.gun,
+     new SelectList(Model.Gunler, "Id", "Ad"), "--Seçin--", new { @class = "form-control", @id="ddlGun"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.BaslangicSaati, "Başlangıç Saati")
+        @Html.DropDownListFor(m => m.baslangic,
+     new SelectList(Model.BaslangicSaati, "Id", "Ad"), "--Seçin--", new { @class = "form-control", @id="ddlBaslangic"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.BitisSaati, "Bitiş Saati")
+        @Html.DropDownListFor(m => m.bitis,
+     new SelectList(Model.BitisSaati, "Id", "Ad"), "--Seçin--", new { @class = "form-control", @id="ddlBitis"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.DersAdi, "Ders Adı")
+        @Html.EditorFor(x => x.DersAdi, new { @class="form-control"})
+    </div>
+
+    <input type="submit" value="Ekle" class="btn btn-primary" />
+}
+
+@section anasayfaDDL
+ {
+    <script type="text/javascript">
+            function cascadeDropDownList(url, source, target, ddlName) {
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: { Id: $('#' + source).val()},
+            dataType: 'json',
+            traditional: true,
+            success: function (data) {
+                // remove previous option contents first
+                $('#' + target + ' option').each(function () {
+                    $(this).remove();
+                });
+
+                // add new option contents
+                var options = '<option value="">--Seçin--</option>';
+                for (var i = 0; i < data.length; i++) {
+                    options += '<option value=' + data[i].Value + '>' + data[i].Text + '</option>';
+                }
+                $('#' + target).html(options);
+            }
+        });
+    }
+    </script>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('#ddlFakulte').change(function () {
+            var url = '@Url.Action("GetDDL", "Home")';
+            var source = $(this).attr('id');
+            var target = $('#ddlBolum').attr('id');
+            cascadeDropDownList(url, source, target, 'ddlBolum');
+        });
+    });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#ddlGun').change(function () {
+                var url = '@Url.Action("GetTimeDDL", "Home")';
+                var source = $(this).attr('id');
+                var bolum = $('#ddlBolum').attr('id');
+                var sinif = $('#ddlSinif').attr('id');
+
+                filterTime(url, source, bolum, sinif);
+                filterEndTime(url, source, bolum, sinif);
+            });
+        });
+    </script>
+
+<script type="text/javascript">
+    function filterTime(url, source, bolum, sinif) {
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: { Gun: $('#' + source).val(), Bolum: $('#' + bolum).val(), Sinif: $('#' + sinif).val()},
+            dataType: 'json',
+            traditional: true,
+            success: function (data) {
+                // remove previous option contents first
+                $('#ddlBaslangic option').each(function () {
+                    $(this).remove();
+                });
+
+                // add new option contents
+                var options = '<option value="">--Seçin--</option>';
+                for (var i = 0; i < data.length; i++) {
+                    options += '<option value=' + data[i].Value + '>' + data[i].Text + '</option>';
+                }
+                $('#ddlBaslangic').html(options);
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    function filterEndTime(url, source, bolum, sinif) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetEndTimeDDL", "Home")',
+            data: { Gun: $('#' + source).val(), Bolum: $('#' + bolum).val(), Sinif: $('#' + sinif).val()},
+            dataType: 'json',
+            traditional: true,
+            success: function (data) {
+                // remove previous option contents first
+                $('#ddlBitis option').each(function () {
+                    $(this).remove();
+                });
+
+                // add new option contents
+                var options = '<option value="">--Seçin--</option>';
+                for (var i = 0; i < data.length; i++) {
+                    options += '<option value=' + data[i].Value + '>' + data[i].Text + '</option>';
+                }
+                $('#ddlBitis').html(options);
+            }
+        });
+    }
+</script>
+}

@@ -1,0 +1,23 @@
+﻿@model YeniDersProgrami.Models.Admin
+@{
+    ViewBag.Title = "Login Page";
+}
+
+<h2>Giriş</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary()
+    <div class="editor-label">
+        @Html.LabelFor(x => x.Name, "Admin Adı")
+        @Html.EditorFor(x => x.Name)
+    </div>
+    <div class="editor-label">
+        @Html.LabelFor(x => x.Password, "Şifre")
+        @Html.EditorFor(x => x.Password)
+    </div>
+    <div>
+        <input type="submit" value="Giriş" style="margin-left:70px" class="btn btn-primary" />
+</div>
+}

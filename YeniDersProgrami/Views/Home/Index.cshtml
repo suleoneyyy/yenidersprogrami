@@ -1,0 +1,79 @@
+﻿@model YeniDersProgrami.ViewModels.Anasayfa
+@{ 
+    ViewBag.Title = "Index";
+}
+
+<h2>DERS PROGRAMI</h2>
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary()
+
+    <div class="form-group">
+
+        @Html.LabelFor(x => x.Fakulteler, "Fakülte")
+        @Html.DropDownListFor(m => m.fakulte,
+     new SelectList(Model.Fakulteler, "Id", "Ad"), "--Seçin--", new { @class = "form-control", @id = "ddlFakulte" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Bolumler, "Bölüm")
+        @Html.DropDownListFor(m => m.bolum,
+ new List<SelectListItem>(), "--Seçin--", new { @class = "form-control", @id = "ddlBolum" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(x => x.Siniflar, "Sınıf")
+        @Html.DropDownListFor(m => m.sinif,
+    new SelectList(Model.Siniflar,"Id", "Ad"), "--Seçin--", new { @class = "form-control", @id = "ddlSinif" })
+    </div>
+
+    <input type="submit" value="Ara" class="btn btn-primary" />
+
+    if (User.Identity.IsAuthenticated)
+    {
+        <a href="@Url.Action("Add")">Ders Ekle</a>
+    }
+
+
+
+    @section anasayfaDDL
+ {
+        <script type="text/javascript">
+            function cascadeDropDownList(url, source, target, ddlName) {
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: { Id: $('#' + source).val()},
+            dataType: 'json',
+            traditional: true,
+            success: function (data) {
+                // remove previous option contents first
+                $('#' + target + ' option').each(function () {
+                    $(this).remove();
+                });
+
+                // add new option contents
+                var options = '<option value="">--Seçin--</option>';
+                for (var i = 0; i < data.length; i++) {
+                    options += '<option value=' + data[i].Value + '>' + data[i].Text + '</option>';
+                }
+                $('#' + target).html(options);
+            }
+        });
+    }
+        </script>
+
+        <script type="text/javascript">
+    $(document).ready(function () {
+        $('#ddlFakulte').change(function () {
+            var url = '@Url.Action("GetDDL", "Home")';
+            var source = $(this).attr('id');
+            var target = $('#ddlBolum').attr('id');
+            cascadeDropDownList(url, source, target, 'ddlBolum');
+        });
+    });
+        </script>
+}
+}
